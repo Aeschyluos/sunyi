@@ -32,48 +32,54 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Discover Local Gigs
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
+        <div className="mb-16">
+          <h1 className="text-4xl font-bold">
+            <span className="text-red-300">Gigs</span> Near You
           </h1>
-          <p className="text-gray-600">
-            Find amazing music events happening in Jakarta
-          </p>
         </div>
 
         {/* View Toggle - Mobile optimized */}
         <div className="mb-6 flex gap-2">
           <button
             onClick={() => setViewMode("list")}
-            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-medium transition ${
-              viewMode === "list"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300"
-            }`}
+            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-medium transition 
+              hover:cursor-pointer hover:transform-[scale(1.05)] active:transform-[scale(1.1)]
+              ${
+                viewMode === "list"
+                  ? "bg-white text-gray-700 border border-gray-300"
+                  : "hover:bg-[#1d1d1d] text-red-300"
+              }`}
+            style={{
+              transition: "transform 0.4s ease",
+            }}
           >
-            List View
+            List
           </button>
           <button
             onClick={() => setViewMode("map")}
-            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-medium transition ${
-              viewMode === "map"
-                ? "bg-blue-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300"
-            }`}
+            className={`flex-1 sm:flex-none px-6 py-2 rounded-lg font-medium transition 
+              hover:cursor-pointer hover:transform-[scale(1.05)] active:transform-[scale(1.1)]
+              ${
+                viewMode === "map"
+                  ? "bg-white text-gray-700 border border-gray-300"
+                  : "hover:bg-[#1d1d1d] text-red-300"
+              }`}
+            style={{
+              transition: "transform 0.4s ease",
+            }}
           >
-            Map View
+            Map
           </button>
         </div>
 
         {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
           </div>
         )}
 
