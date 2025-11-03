@@ -44,67 +44,92 @@ func (r *GigRepository) Create(gig *models.Gig) error {
 }
 
 func (r *GigRepository) GetAll() ([]models.Gig, error) {
+    // First, get all gigs
     var gigs []models.Gig
     query := `
-        SELECT g.*, 
-               u.id as "organizer.id",
-               u.username as "organizer.username",
-               u.email as "organizer.email",
-               u.role as "organizer.role",
-               u.bio as "organizer.bio",
-               u.profile_image as "organizer.profile_image",
-               u.created_at as "organizer.created_at",
-               u.updated_at as "organizer.updated_at"
-        FROM gigs g
-        LEFT JOIN users u ON g.organizer_id = u.id
-        ORDER BY g.date DESC, g.start_time DESC
+        SELECT id, title, description, venue_name, venue_address,
+               latitude, longitude, date, start_time, end_time,
+               price, image_url, organizer_id, genres,
+               created_at, updated_at
+        FROM gigs
+        ORDER BY date DESC, start_time DESC
     `
     err := r.db.Select(&gigs, query)
-    return gigs, err
+    if err != nil {
+        return nil, err
+    }
+
+    // Then fetch organizer for each gig
+    userQuery := `SELECT id, username, email, role, bio, profile_image, created_at, updated_at FROM users WHERE id = $1`
+    for i := range gigs {
+        var user models.User
+        err := r.db.Get(&user, userQuery, gigs[i].OrganizerID)
+        if err == nil {
+            gigs[i].Organizer = &user
+        }
+    }
+
+    return gigs, nil
 }
 
 func (r *GigRepository) GetByID(id string) (*models.Gig, error) {
     var gig models.Gig
     query := `
-        SELECT g.*, 
-               u.id as "organizer.id",
-               u.username as "organizer.username",
-               u.email as "organizer.email",
-               u.role as "organizer.role",
-               u.bio as "organizer.bio",
-               u.profile_image as "organizer.profile_image",
-               u.created_at as "organizer.created_at",
-               u.updated_at as "organizer.updated_at"
-        FROM gigs g
-        LEFT JOIN users u ON g.organizer_id = u.id
-        WHERE g.id = $1
+        SELECT id, title, description, venue_name, venue_address,
+               latitude, longitude, date, start_time, end_time,
+               price, image_url, organizer_id, genres,
+               created_at, updated_at
+        FROM gigs
+        WHERE id = $1
     `
     err := r.db.Get(&gig, query, id)
     if err == sql.ErrNoRows {
         return nil, nil
     }
-    return &gig, err
+    if err != nil {
+        return nil, err
+    }
+
+    // Fetch organizer
+    var user models.User
+    userQuery := `SELECT id, username, email, role, bio, profile_image, created_at, updated_at FROM users WHERE id = $1`
+    err = r.db.Get(&user, userQuery, gig.OrganizerID)
+    if err == nil {
+        gig.Organizer = &user
+    }
+
+    return &gig, nil
 }
 
 func (r *GigRepository) GetByOrganizerID(organizerID string) ([]models.Gig, error) {
     var gigs []models.Gig
     query := `
-        SELECT g.*, 
-               u.id as "organizer.id",
-               u.username as "organizer.username",
-               u.email as "organizer.email",
-               u.role as "organizer.role",
-               u.bio as "organizer.bio",
-               u.profile_image as "organizer.profile_image",
-               u.created_at as "organizer.created_at",
-               u.updated_at as "organizer.updated_at"
-        FROM gigs g
-        LEFT JOIN users u ON g.organizer_id = u.id
-        WHERE g.organizer_id = $1
-        ORDER BY g.date DESC, g.start_time DESC
+        SELECT id, title, description, venue_name, venue_address,
+               latitude, longitude, date, start_time, end_time,
+               price, image_url, organizer_id, genres,
+               created_at, updated_at
+        FROM gigs
+        WHERE organizer_id = $1
+        ORDER BY date DESC, start_time DESC
     `
     err := r.db.Select(&gigs, query, organizerID)
-    return gigs, err
+    if err != nil {
+        return nil, err
+    }
+
+    // Fetch organizer for each gig
+    if len(gigs) > 0 {
+        var user models.User
+        userQuery := `SELECT id, username, email, role, bio, profile_image, created_at, updated_at FROM users WHERE id = $1`
+        err := r.db.Get(&user, userQuery, organizerID)
+        if err == nil {
+            for i := range gigs {
+                gigs[i].Organizer = &user
+            }
+        }
+    }
+
+    return gigs, nil
 }
 
 func (r *GigRepository) Update(gig *models.Gig) error {
