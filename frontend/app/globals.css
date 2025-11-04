@@ -7,12 +7,51 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #080808; /* different dark bg */
+    --bg: #101010;
     --fg: #ededed;
   }
 }
 
 body {
   background: var(--bg);
-  color: var(--fg); /* inherited by children */
+  color: var(--fg);
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-tip {
+  background: #1a1a1a !important;
+  border: 1px solid #2a2a2a !important;
+}
+
+.leaflet-popup-close-button {
+  color: #fca5a5 !important;
+  font-size: 20px !important;
+  padding: 4px 8px !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #f87171 !important;
+}
+
+/* Custom marker */
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Attribution */
+.leaflet-control-attribution {
+  background: rgba(26, 26, 26, 0.8) !important;
+  color: #545558 !important;
+  font-size: 10px !important;
+}
+
+.leaflet-control-attribution a {
+  color: #fca5a5 !important;
 }

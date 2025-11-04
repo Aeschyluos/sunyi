@@ -24,25 +24,20 @@ export default function Header() {
           <nav className="flex items-center gap-4">
             {user ? (
               <>
-                <Link
-                  href="/"
-                  className="text-white hover:text-red-300 transition"
-                >
-                  Gigs
-                </Link>
-
                 {isOrganizer && (
                   <Link
                     href="/gigs/create"
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    className="flex items-center gap-1 bg-[#262626] text-red-300 px-4 py-2 rounded-lg 
+                  hover:bg-[#1d1d1d] hover:transform-[scale(1.05)] active:transform-[scale(1.15)]
+                  active:bg-[#3c3c3c] transition duration-300 ease"
                   >
-                    <Plus className="w-4 h-4" />
-                    Create Gig
+                    <Plus className="w-4 h-4 mb-1" />
+                    Create
                   </Link>
                 )}
 
                 <Link
-                  href="/profile"
+                  href="/"
                   className="flex items-center gap-2 text-white hover:text-red-300 transition"
                 >
                   <User className="w-5 h-5" />
@@ -51,7 +46,7 @@ export default function Header() {
 
                 <button
                   onClick={logout}
-                  className="flex items-center gap-2 text-white hover:text-red-300 transition"
+                  className="flex items-center gap-2 text-white hover:text-red-300 hover:cursor-pointer transition"
                 >
                   <LogOut className="w-5 h-5" />
                   <span className="hidden sm:inline">Logout</span>
@@ -67,7 +62,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/auth/register"
-                  className="bg-[#262626] text-white px-4 py-2 rounded-lg 
+                  className="bg-[#262626] text-red-300 px-4 py-2 rounded-lg 
                   hover:bg-[#1d1d1d] hover:transform-[scale(1.05)] active:transform-[scale(1.15)]
                   active:bg-[#3c3c3c] transition duration-300 ease"
                 >

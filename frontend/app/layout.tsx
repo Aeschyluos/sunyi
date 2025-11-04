@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Zain } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../lib/authContext";
+import "leaflet/dist/leaflet.css";
 
 const zain = Zain({
   subsets: ["latin"],
@@ -9,8 +10,7 @@ const zain = Zain({
 });
 
 export const metadata: Metadata = {
-  title: "Sunyi - Discover Local Gigs in Jakarta",
-  description: "Find and attend local music events in Jakarta",
+  title: "Sunyi",
 };
 
 export default function RootLayout({

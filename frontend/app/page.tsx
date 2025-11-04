@@ -5,8 +5,17 @@ import { gigsAPI } from "../lib/api";
 import type { Gig } from "../types";
 import Header from "../components/Header";
 import GigCard from "../components/GigCard";
-import GigMap from "../components/GigMap";
 import { Loader2 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const GigMap = dynamic(() => import("../components/GigMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-[#1a1a1a] rounded-lg flex items-center justify-center border border-[#2a2a2a]">
+      <Loader2 className="w-8 h-8 animate-spin text-red-300" />
+    </div>
+  ),
+});
 
 export default function Home() {
   const [gigs, setGigs] = useState<Gig[]>([]);
@@ -36,7 +45,7 @@ export default function Home() {
       <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16">
-        <div className="mb-16">
+        <div className="mb-12">
           <h1 className="text-4xl font-bold">
             <span className="text-red-300">Gigs</span> Near You
           </h1>
@@ -50,14 +59,14 @@ export default function Home() {
               hover:cursor-pointer hover:transform-[scale(1.05)] active:transform-[scale(1.1)]
               ${
                 viewMode === "list"
-                  ? "bg-white text-gray-700 border border-gray-300"
+                  ? "bg-[#ded7d7] text-gray-700 border border-gray-300"
                   : "hover:bg-[#1d1d1d] text-red-300"
               }`}
             style={{
               transition: "transform 0.4s ease",
             }}
           >
-            List
+            Gigs
           </button>
           <button
             onClick={() => setViewMode("map")}
@@ -65,7 +74,7 @@ export default function Home() {
               hover:cursor-pointer hover:transform-[scale(1.05)] active:transform-[scale(1.1)]
               ${
                 viewMode === "map"
-                  ? "bg-white text-gray-700 border border-gray-300"
+                  ? "bg-[#ded7d7] text-gray-700 border border-gray-300"
                   : "hover:bg-[#1d1d1d] text-red-300"
               }`}
             style={{
@@ -93,8 +102,8 @@ export default function Home() {
         {/* Empty State */}
         {!loading && !error && gigs.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg mb-4">No gigs found</p>
-            <p className="text-gray-400">Check back later for new events!</p>
+            <p className="text-gray-500 text-lg mb-4">Lagi gaada nih.</p>
+            <p className="text-red-300">Check back later for new events!</p>
           </div>
         )}
 
@@ -108,7 +117,7 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="h-[600px]">
+              <div className="h-[600px] mb-12">
                 <GigMap
                   gigs={gigs}
                   center={{
