@@ -51,7 +51,6 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* View Toggle - Mobile optimized */}
         <div className="mb-6 flex gap-2">
           <button
             onClick={() => setViewMode("list")}
@@ -85,21 +84,18 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-gray-600" />
           </div>
         )}
 
-        {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
             {error}
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && !error && gigs.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg mb-4">Lagi gaada nih.</p>
@@ -107,7 +103,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Content */}
         {!loading && !error && gigs.length > 0 && (
           <>
             {viewMode === "list" ? (

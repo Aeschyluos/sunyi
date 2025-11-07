@@ -22,57 +22,46 @@ import (
 )
 
 func main() {
-	// Load .env file (ignore error if not found - useful for production)
 	_ = godotenv.Load()
 
-	// Set Gin mode based on environment
 	if getEnv("ENV", "development") == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// Get database connection string
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		log.Fatal("DATABASE_URL required (Supabase connection string)")
+		log.Fatal("DATABASE_URL required")
 	}
 
-	// Get JWT configuration
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		log.Fatal("JWT_SECRET required")
 	}
 	jwtExp := getEnv("JWT_EXPIRATION", "24h")
 
-	// Connect to database
 	db, err := sqlx.Open("postgres", dsn)
 	if err != nil {
 		log.Fatalf("failed to open database: %v", err)
 	}
 	defer db.Close()
 
-	// Configure connection pool
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
-	// Test connection
 	if err := db.Ping(); err != nil {
-		log.Fatalf("failed to ping database: %v", err)
+		log.Fatalf("failed to get database: %v", err)
 	}
-	log.Println("✓ Connected to database")
+	log.Println("Connected to database")
 
-	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
 	gigRepo := repository.NewGigRepository(db)
 
-	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(userRepo, jwtSecret, jwtExp)
 	gigHandler := handlers.NewGigHandler(gigRepo)
 
-	// Setup Gin router
 	router := gin.Default()
 
-	// CORS configuration
 	allowedOrigins := strings.Split(getEnv("ALLOWED_ORIGINS", "http://localhost:3000"), ",")
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     allowedOrigins,
@@ -83,7 +72,6 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// Health check endpoint
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status": "healthy",
@@ -91,10 +79,8 @@ func main() {
 		})
 	})
 
-	// API v1 routes
 	api := router.Group("/api")
 	{
-		// Auth routes
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)
@@ -102,15 +88,12 @@ func main() {
 			auth.GET("/me", middleware.AuthMiddleware(jwtSecret), authHandler.GetCurrentUser)
 		}
 
-		// Gigs routes
 		gigs := api.Group("/gigs")
 		{
-			// Public routes
 			gigs.GET("", gigHandler.GetAllGigs)
 			gigs.GET("/:id", gigHandler.GetGigByID)
 			gigs.GET("/organizer/:organizerId", gigHandler.GetGigsByOrganizer)
 
-			// Protected routes (organizer only)
 			gigs.POST("", 
 				middleware.AuthMiddleware(jwtSecret), 
 				middleware.OrganizerOnly(), 
@@ -129,7 +112,6 @@ func main() {
 		}
 	}
 
-	// Setup HTTP server
 	port := getEnv("PORT", "8080")
 	srv := &http.Server{
 		Addr:           ":" + port,
@@ -137,36 +119,31 @@ func main() {
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		IdleTimeout:    60 * time.Second,
-		MaxHeaderBytes: 1 << 20, // 1 MB
+		MaxHeaderBytes: 1 << 20, // that's 1 mb
 	}
 
-	// Start server in a goroutine
 	go func() {
-		log.Printf("🚀 Server starting on port %s", port)
-		log.Printf("📍 Environment: %s", getEnv("ENV", "development"))
-		log.Printf("🌐 Allowed origins: %s", strings.Join(allowedOrigins, ", "))
+		log.Printf("Port: %s", port)
 		
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("failed to start server: %v", err)
 		}
 	}()
 
-	// Wait for interrupt signal for graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("🛑 Shutting down server...")
+	log.Println("Server stopping. . .")
 
-	// Graceful shutdown with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server forced to shutdown: %v", err)
+		log.Fatalf("Server forced to stop: %v", err)
 	}
 
-	log.Println("✓ Server exited properly")
+	log.Println("Server exited correctly")
 }
 
 func getEnv(key, defaultValue string) string {

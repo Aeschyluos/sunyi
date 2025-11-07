@@ -8,7 +8,6 @@ import Link from "next/link";
 import { Calendar, MapPin } from "lucide-react";
 import { format } from "date-fns";
 
-// Fix for default marker icons
 const icon = L.icon({
   iconUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
@@ -22,7 +21,6 @@ const icon = L.icon({
   shadowSize: [41, 41],
 });
 
-// Custom red marker
 const createCustomIcon = () => {
   return L.divIcon({
     className: "custom-marker",
@@ -120,7 +118,7 @@ export default function GigMap({ gigs, center, onGigClick }: GigMapProps) {
                   </div>
                 </div>
 
-                <Link
+                {/* <Link
                   href={`/gigs/${gig.id}`}
                   className="block text-center bg-[#262626] py-2 px-3 rounded hover:bg-[#1e1e1e] hover:transform-[scale(1.05)] 
                   transition duration-300 ease"
@@ -128,7 +126,7 @@ export default function GigMap({ gigs, center, onGigClick }: GigMapProps) {
                   <span className="text-sm font-semibold text-red-300">
                     View Details
                   </span>
-                </Link>
+                </Link> */}
               </div>
             </Popup>
           </Marker>

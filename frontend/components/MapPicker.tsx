@@ -42,7 +42,6 @@ function LocationMarker({
 }) {
   const [position, setPosition] = useState<[number, number]>(externalPosition);
 
-  // Update marker when external position changes (from address search)
   useEffect(() => {
     setPosition(externalPosition);
   }, [externalPosition]);
@@ -58,7 +57,6 @@ function LocationMarker({
   return <Marker position={position} icon={createCustomIcon()} />;
 }
 
-// Component to recenter map when position changes
 function RecenterMap({ position }: { position: [number, number] }) {
   const map = useMap();
 
